@@ -5,6 +5,7 @@ importClass("java.net.Inet6Address");
 var avisoButton = descContains("AVISO").classNameContains("android.view.View").findOne(100);
 // 在初始页面
 if (avisoButton) {
+  idContains("mnu_title1").textContains("Заработать").classNameContains("android.widget.TextView").waitFor();
   var ЗаработатьButton = idContains("mnu_title1").textContains("Заработать").classNameContains("android.widget.TextView").findOne(100);
   // 找到Заработать标识，表示在初始页面
   if (ЗаработатьButton) {
@@ -18,12 +19,44 @@ if (avisoButton) {
         //无法播放
         unableToPlay();
         // 进入视频界面，判断播放按钮出现
-        isPlayButtonEstimate();
-        //观看视频
-        watchVideo();
-        var button = textContains("https://www.youtube.com/").classNameContains("android.widget.TextView").findOne(100);
-        if (!button) {
-          break;
+        var result = isPlayButtonEstimate();
+        if (result == "找到播放按钮2") {
+          //观看视频
+          watchVideo();
+          var button = textContains("https://www.youtube.com/").classNameContains("android.widget.TextView").findOne(100);
+          if (!button) {
+            break;
+          }
+        } else {
+          toastLog("未找到符合条件的控件33333");
+          sleep(3000);
+          toastLog("重新刷新页面");
+          // app.openUrl("https://aviso.bz/work-youtube");
+          app.startActivity({
+            packageName: "com.android.chrome",
+            className: "org.chromium.chrome.browser.ChromeTabbedActivity",
+            data: "https://aviso.bz/work-youtube"
+
+          });
+          sleep(3000);
+          var isRussian = idContains("com.android.chrome:id/translate_infobar_tab_text").textContains("俄语").classNameContains("android.widget.TextView").findOne(100);
+          if (isRussian) {
+            click(isRussian.bounds().centerX() + random(-5, 5), isRussian.bounds().centerY() + random(-5, 5));
+            sleep(2000);
+            while (true) {
+              //观看前点击步骤
+              clickToView();
+              //无法播放判断
+              unableToPlay();
+              isPlayButtonEstimate();
+              //观看视频
+              watchVideo();
+              var button = textContains("https://www.youtube.com/").classNameContains("android.widget.TextView").findOne(100);
+              if (!button) {
+                break;
+              }
+            }
+          }
         }
       }
     } else {
@@ -38,16 +71,18 @@ if (avisoButton) {
         toastLog("无法播放");
         unableToPlay();
         // 播放按钮存在判断
-        isPlayButtonEstimate();
-        //观看视频
-        watchVideo();
-        var button = textContains("https://www.youtube.com/").classNameContains("android.widget.TextView").findOne(100);
-        if (!button) {
-          break;
+        var result = isPlayButtonEstimate();
+        if (result == "找到播放按钮2") {
+          //观看视频
+          watchVideo();
+          var button = textContains("https://www.youtube.com/").classNameContains("android.widget.TextView").findOne(100);
+          if (!button) {
+            break;
+          }
         }
+
       }
     }
-
   }
 } else {
   toastLog("在初始页面，但没有相关视频按钮，需要重新刷新页面");
@@ -161,10 +196,10 @@ function watchVideo() {
   //倒计时
   var countDown = idContains("tmr").classNameContains("android.widget.TextView").findOne(100);
   toastLog("倒计时：" + countDown.text() + "秒");
-  sleep(2000);
+  sleep(500);
   //判断视频播放时间
   if (countDown.text() <= 30) {
-    sleep(5000);
+    sleep(2000);
     toastLog("视频小于30秒给予播放");
     // 存在播放按钮
     var play = textContains("播放").classNameContains("android.widget.Button").findOne(100);
@@ -278,6 +313,32 @@ function unableToPlay() {
       }
     } else {
       toastLog("未找到符合条件的控件33333");
+      //刷新页面
+      app.startActivity({
+        packageName: "com.android.chrome",
+        className: "org.chromium.chrome.browser.ChromeTabbedActivity",
+        data: "https://aviso.bz/work-youtube"
+
+      });
+      sleep(3000);
+      var isRussian = idContains("com.android.chrome:id/translate_infobar_tab_text").textContains("俄语").classNameContains("android.widget.TextView").findOne(100);
+      if (isRussian) {
+        click(isRussian.bounds().centerX() + random(-5, 5), isRussian.bounds().centerY() + random(-5, 5));
+        sleep(2000);
+        while (true) {
+          //观看前点击步骤
+          clickToView();
+          //无法播放判断
+          unableToPlay();
+          isPlayButtonEstimate();
+          //观看视频
+          watchVideo();
+          var button = textContains("https://www.youtube.com/").classNameContains("android.widget.TextView").findOne(100);
+          if (!button) {
+            break;
+          }
+        }
+      }
     }
   } else {
     toastLog("可以播放");
@@ -303,12 +364,12 @@ function isPlayButtonEstimate() {
       var isPlayOver = text("Поддержите видео лайком 👍").className("android.widget.TextView").exists();
       if (isPlayButton == true) {
         toastLog("找到播放按钮2");
-        break;
+        return "找到播放按钮2";
       } else if (isPlayOver == true) {
-        toastLog("测试1完毕");
         sleep(500);
         back();
-        break;
+        toastLog("测试1完毕");
+        return "测试1完毕";
       } else {
         sleep(1500);
       }
