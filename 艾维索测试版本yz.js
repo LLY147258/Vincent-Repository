@@ -1,40 +1,57 @@
-var avisoButton = descContains("AVISO").classNameContains("android.view.View").findOne(100);
-descContains("AVISO").classNameContains("android.view.View").waitFor();
-// 在初始页面
-if (avisoButton) {
-  idContains("mnu_title1").textContains("Заработать").classNameContains("android.widget.TextView").waitFor();
-  var ЗаработатьButton = idContains("mnu_title1").textContains("Заработать").classNameContains("android.widget.TextView").findOne(100);
-  // 找到Заработать标识，表示在初始页面
-  if (ЗаработатьButton) {
-    //查找YouTube按钮是否在当前页面，再次确认是否在当前页面
-    var youtubeButton = textContains("YouTube").classNameContains("android.widget.TextView").findOne(100);
-    //等待，直到控件出现
-    textContains("YouTube").classNameContains("android.widget.TextView").waitFor();
-    //存在YouTube按钮，点击视频播放
-    if (youtubeButton) {
-      main();
-
+while (true) {
+  sleep(5000);
+  //主线程
+  var mainThread = threads.start(function () {
+    var avisoButton = descContains("AVISO").classNameContains("android.view.View").findOne(100);
+    descContains("AVISO").classNameContains("android.view.View").waitFor();
+    // 在初始页面
+    if (avisoButton) {
+      idContains("mnu_title1").textContains("Заработать").classNameContains("android.widget.TextView").waitFor();
+      var ЗаработатьButton = idContains("mnu_title1").textContains("Заработать").classNameContains("android.widget.TextView").findOne(100);
+      // 找到Заработать标识，表示在初始页面
+      if (ЗаработатьButton) {
+        //查找YouTube按钮是否在当前页面，再次确认是否在当前页面
+        var youtubeButton = textContains("YouTube").classNameContains("android.widget.TextView").findOne(100);
+        //等待，直到控件出现
+        textContains("YouTube").classNameContains("android.widget.TextView").waitFor();
+        //存在YouTube按钮，点击视频播放
+        if (youtubeButton) {
+          main();
+        } else {
+          //不存在YouTube按钮，点击Заработать，重新找到
+          toastLog("不存在YouTube按钮");
+          //点击上一级按钮
+          click(ЗаработатьButton.bounds().centerX() + random(-5, 5), ЗаработатьButton.bounds().centerY() + random(-5, 5));
+          main();
+        }
+      } else {
+        sleep(1000);
+        toastLog("未找到Заработать标识，不在初始页面，重新刷新页");
+        // 重新刷新页面
+        sleep(2000);
+        //流程重置
+        resolveVideo();
+      }
     } else {
-
-      //不存在YouTube按钮，点击Заработать，重新找到
-      toastLog("不存在YouTube按钮");
-      //点击上一级按钮
-      click(ЗаработатьButton.bounds().centerX() + random(-5, 5), ЗаработатьButton.bounds().centerY() + random(-5, 5));
-      main();
+      toastLog("在初始页面，但没有相关视频按钮，需要重新刷新页面");
+      sleep(3000);
+      //流程重置
+      resolveVideo();
     }
-  } else {
-    sleep(1000);
-    toastLog("未找到Заработать标识，不在初始页面，重新刷新页");
-    // 重新刷新页面
-    sleep(2000);
-    //流程重置
-    resolveVideo();
+  });
+
+  for (i = 0; i <= 600; i++) {
+    sleep(1000)
+    if (i == 600) {
+      toastLog("已运行" + i / 60 + "分钟")
+      // 1分钟后中断主线程
+      mainThread.interrupt();
+    }
   }
-} else {
-  toastLog("在初始页面，但没有相关视频按钮，需要重新刷新页面");
   sleep(3000);
-  //流程重置
-  resolveVideo();
+  //关闭标签
+  closeLabel();
+  sleep(3000);
 }
 
 // 主流程
@@ -149,6 +166,8 @@ function watchVideo() {
       if (true) {
         sleep(2500);
         var isPlayOver = text("Поддержите видео лайком 👍").className("android.widget.TextView").exists();
+        var errorOne = idContains("succes-error").textContains("просмотра").exists();
+        var errorTwo = id("succes-error").text("Время выполнения истекло").className("android.view.View").exists();
         if (isPlayOver == true) {
           toastLog("测试1");
           //观看完毕
@@ -160,6 +179,8 @@ function watchVideo() {
           } else {
             toastLog("未找到符合条件的控件");
           }
+        } else if (errorOne || errorTwo) {
+          resolveVideo();
         } else {
           // 出现二次点击
           toastLog("测试2");
@@ -217,6 +238,75 @@ function resolveVideo() {
       unableToPlay();
       //观看视频
       watchVideo();
+    }
+  }
+}
+
+// 关闭浏览器标签
+function closeLabel() {
+  sleep(500);
+  app.startActivity({
+    packageName: "com.android.chrome",
+    className: "org.chromium.chrome.browser.ChromeTabbedActivity",
+    data: "https://aviso.bz/work-youtube"
+  });
+  sleep(5000)
+  descContains("AVISO").classNameContains("android.view.View").waitFor();
+  var returned = idContains("com.android.chrome:id/tab_switcher_button").descContains("切换或关闭标签页").classNameContains("android.widget.ImageButton").findOnce();
+  if (returned) {
+    returned.click();
+    sleep(3000);
+    if (idContains("com.android.chrome:id/menu_button").descContains("自定义及控制").classNameContains("android.widget.ImageButton").findOnce()) {
+      var returned = idContains("com.android.chrome:id/menu_button").descContains("自定义及控制").classNameContains("android.widget.ImageButton").findOnce();
+      if (returned) {
+        returned.click();
+        sleep(3000);
+        var returned = idContains("com.android.chrome:id/close_all_tabs_menu_id").classNameContains("android.widget.LinearLayout").findOnce();
+        if (returned) {
+          returned.click();
+          sleep(3000);
+          var returned = idContains("com.android.chrome:id/positive_button").textContains("关闭所有标签页").classNameContains("android.widget.Button").findOnce();
+          if (returned) {
+            returned.click();
+            sleep(3000)
+            app.startActivity({
+              packageName: "com.android.chrome",
+              className: "org.chromium.chrome.browser.ChromeTabbedActivity",
+              data: "https://aviso.bz/work-youtube"
+            });
+            sleep(5000)
+            descContains("AVISO").classNameContains("android.view.View").waitFor();
+          }
+        }
+      }
+    } else {
+      back()
+      sleep(3000)
+      var returned = idContains("com.android.chrome:id/tab_switcher_button").descContains("切换或关闭标签页").classNameContains("android.widget.ImageButton").findOnce();
+      returned.click()
+      sleep(2000)
+      var returned = idContains("com.android.chrome:id/menu_button").descContains("自定义及控制").classNameContains("android.widget.ImageButton").findOnce();
+      if (returned) {
+        returned.click();
+        sleep(1500);
+        var returned = idContains("com.android.chrome:id/close_all_tabs_menu_id").classNameContains("android.widget.LinearLayout").findOnce();
+        if (returned) {
+          returned.click();
+          sleep(1500);
+          var returned = idContains("com.android.chrome:id/positive_button").textContains("关闭所有标签页").classNameContains("android.widget.Button").findOnce();
+          if (returned) {
+            returned.click();
+            sleep(2000)
+            app.startActivity({
+              packageName: "com.android.chrome",
+              className: "org.chromium.chrome.browser.ChromeTabbedActivity",
+              data: "https://aviso.bz/work-youtube"
+            });
+            sleep()
+            descContains("AVISO").classNameContains("android.view.View").waitFor();
+          }
+        }
+      }
     }
   }
 }
