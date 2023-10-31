@@ -1,4 +1,4 @@
-toastLog("开始");
+toastLog("程序开始");
 var avisoButton = descContains("AVISO").classNameContains("android.view.View").findOne(100);
 descContains("AVISO").classNameContains("android.view.View").waitFor();
 // 在初始页面
@@ -16,15 +16,29 @@ if (avisoButton) {
   }
 }
 
+for (i = 0; i <= 120; i++) {
+  sleep(1000)
+  if (i == 120) {
+    toastLog("已运行" + i / 60 + "分钟")
+    app.startActivity({
+      packageName: "com.android.chrome",
+      className: "org.chromium.chrome.browser.ChromeTabbedActivity",
+      data: "https://aviso.bz/work-youtube"
+
+    });
+    // 网页浏览主方法
+    pageMain();
+  }
+}
+
 function pageMain() {
-  toastLog("开始浏览页面");
+  toastLog("准备浏览页面");
   var returnedList = idContains("start-serf").classNameContains("android.view.View").untilFind();
   for (var i = 0, len = returnedList.length; i < len; i++) {
     console.log(i);
     var flow1 = returnedList[i];
     click(flow1.bounds().centerX() + random(-5, 5), flow1.bounds().centerY() + random(-5, 5));
     sleep(1500);
-    // textContains("Приступить").classNameContains("android.widget.TextView").waitFor();
     var flow2 = textContains("Приступить").classNameContains("android.widget.TextView").findOnce();
     sleep(1500);
     toastLog(flow2);
