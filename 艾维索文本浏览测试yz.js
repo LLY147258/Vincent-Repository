@@ -9,25 +9,12 @@ if (avisoButton) {
     text("Серфинг").className("android.widget.TextView").waitFor();
     var СерфингButton = text("Серфинг").className("android.widget.TextView").findOne(100);
     if (СерфингButton) {
-      sleep(2500);
+      sleep(500);
       // 网页浏览主方法
-      pageMain();
+      while (true) {
+        pageMain();
+      }
     }
-  }
-}
-
-for (i = 0; i <= 120; i++) {
-  sleep(1000)
-  if (i == 120) {
-    toastLog("已运行" + i / 60 + "分钟")
-    app.startActivity({
-      packageName: "com.android.chrome",
-      className: "org.chromium.chrome.browser.ChromeTabbedActivity",
-      data: "https://aviso.bz/work-youtube"
-
-    });
-    // 网页浏览主方法
-    pageMain();
   }
 }
 
@@ -37,7 +24,7 @@ function pageMain() {
   for (var i = 0, len = returnedList.length; i < len; i++) {
     console.log(i);
     var flow1 = returnedList[i];
-    click(flow1.bounds().centerX() + random(-5, 5), flow1.bounds().centerY() + random(-5, 5));
+    click(flow1.bounds().centerX()-80, flow1.bounds().centerY() + random(-5, 1));
     sleep(1500);
     var flow2 = textContains("Приступить").classNameContains("android.widget.TextView").findOnce();
     sleep(1500);
