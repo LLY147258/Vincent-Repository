@@ -9,7 +9,7 @@ if (avisoButton) {
     text("Серфинг").className("android.widget.TextView").waitFor();
     var СерфингButton = text("Серфинг").className("android.widget.TextView").findOne(100);
     if (СерфингButton) {
-      sleep(2000);
+      sleep(2500);
       // 网页浏览主方法
       pageMain();
     }
@@ -21,18 +21,23 @@ function pageMain() {
   var returnedList = idContains("start-serf").classNameContains("android.view.View").untilFind();
   for (var i = 0, len = returnedList.length; i < len; i++) {
     console.log(i);
-    var returned = returnedList[i];
-    click(returned.bounds().centerX() + random(-5, 5), returned.bounds().centerY() + random(-5, 5));
+    var flow1 = returnedList[i];
+    click(flow1.bounds().centerX() + random(-5, 5), flow1.bounds().centerY() + random(-5, 5));
     sleep(1500);
     // textContains("Приступить").classNameContains("android.widget.TextView").waitFor();
-    var isПриступитьButton = textContains("Приступить к просмотру").classNameContains("android.widget.TextView").findOnce();
-    click(isПриступитьButton.bounds().centerX() + random(-5, 5), isПриступитьButton.bounds().centerY() + random(-5, 5));
-    textContains("Подтвердить просмотр").classNameContains("android.widget.TextView").waitFor();
-    var browseOver = textContains("Подтвердить просмотр").classNameContains("android.widget.TextView").findOne(100);
-    click(browseOver.bounds().centerX() + random(-5, 5), browseOver.bounds().centerY() + random(-5, 5));
+    var flow2 = textContains("Приступить").classNameContains("android.widget.TextView").findOnce();
     sleep(1500);
-    back();
-    sleep(500);
-    back();
+    toastLog(flow2);
+    if (flow2) {
+      click(flow2.bounds().centerX() + random(-5, 5), flow2.bounds().centerY() + random(-5, 5));
+      textContains("Подтвердить просмотр").classNameContains("android.widget.TextView").waitFor();
+      var browseOver = textContains("Подтвердить просмотр").classNameContains("android.widget.TextView").findOne(100);
+      sleep(1500);
+      click(browseOver.bounds().centerX() + random(-5, 5), browseOver.bounds().centerY() + random(-5, 5));
+      sleep(1500);
+      back();
+      sleep(1500);
+      back();
+    }
   }
 }
