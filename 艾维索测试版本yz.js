@@ -1,3 +1,7 @@
+//一直保持屏幕常亮
+device.keepScreenOn()
+console.show();
+console.setTitle("控制台");
 while (true) {
   sleep(5000);
   //视频浏览主线程
@@ -21,7 +25,7 @@ while (true) {
           //不存在YouTube按钮，点击Заработать，重新找到
           toastLog("不存在YouTube按钮");
           //点击上一级按钮
-          click(ЗаработатьButton.bounds().centerX() + random(-5, 5), ЗаработатьButton.bounds().centerY() + random(-5, 5));
+          ЗаработатьButton.click();
           main();
         }
       } else {
@@ -40,20 +44,24 @@ while (true) {
     }
   });
 
-  for (i = 0; i <= 300; i++) {
+  for (i = 0; i <= 120; i++) {
     sleep(1000)
-    if (i == 300) {
-      toastLog("已运行" + i / 60 + "分钟")
+    if (i == 120) {
+      console.log("视频浏览已运行" + i / 60 + "分钟")
       // 5分钟后中断主线程
       mainThread.interrupt();
     }
   }
   sleep(3000);
+  console.log("回到主页，准备启动冲浪模块")
+  home();
+  sleep(3000);
   //关闭标签
   closeLabel();
-  sleep(5000);
+  sleep(3000);
 
   //跳转至网页浏览
+  console.log("跳转至网页浏览");
   app.startActivity({
     packageName: "com.android.chrome",
     className: "org.chromium.chrome.browser.ChromeTabbedActivity",
@@ -76,18 +84,27 @@ while (true) {
         if (СерфингButton) {
           sleep(500);
           // 网页浏览主方法
-          var count = 0;
-          while (true) {
-            pageMain();
-            count++;
-            if (count == 5) {
-              toastLog("结束");
-              break;
-            }
-          }
+          pageMain();
         }
       }
     }
+  });
+
+  for (i = 0; i <= 120; i++) {
+    sleep(1000)
+    if (i == 120) {
+      toastLog("网页浏览已运行" + i / 60 + "分钟")
+      // 5分钟后中断主线程
+      mainThreadOfWebPage.interrupt();
+    }
+  }
+  sleep(500);
+  console.log("跳转至视频浏览");
+  app.startActivity({
+    packageName: "com.android.chrome",
+    className: "org.chromium.chrome.browser.ChromeTabbedActivity",
+    data: "https://aviso.bz/work-youtube"
+
   });
 }
 
@@ -108,13 +125,14 @@ function clickToView() {
   //视频播放点击按钮
   var button = textContains("https://www.youtube.com").classNameContains("android.widget.TextView").findOne(100);;
   if (button) {
-    click(button.bounds().centerX() + random(-5, 5), button.bounds().centerY() + random(-5, 5));
+    button.click();
     sleep(2000);
     var returned = textContains("Приступить к выполнению").classNameContains("android.widget.TextView").findOne(100);
     sleep(2000);
     if (returned) {
       toastLog("准备进入观看视频");
-      click(returned.bounds().centerX() + random(-5, 5), returned.bounds().centerY() + random(-5, 5));
+      returned.click();
+      //click(returned.bounds().centerX() + random(-5, 5), returned.bounds().centerY() + random(-5, 5));
       sleep(4000);
     } else {
       //流程重置
@@ -355,7 +373,7 @@ function pageMain() {
   for (var i = 0, len = returnedList.length; i < len; i++) {
     console.log(i);
     var flow1 = returnedList[i];
-    click(flow1.bounds().centerX() - 80, flow1.bounds().centerY() + random(-5, 1));
+    click(flow1.bounds().centerX() - 130, flow1.bounds().centerY() + random(-5, 1));
     sleep(1500);
     var flow2 = textContains("Приступить").classNameContains("android.widget.TextView").findOnce();
     sleep(1500);
@@ -365,11 +383,62 @@ function pageMain() {
       textContains("Подтвердить просмотр").classNameContains("android.widget.TextView").waitFor();
       var browseOver = textContains("Подтвердить просмотр").classNameContains("android.widget.TextView").findOne(100);
       sleep(1500);
-      click(browseOver.bounds().centerX() + random(-5, 5), browseOver.bounds().centerY() + random(-5, 5));
+      browseOver.click();
       sleep(1500);
       back();
       sleep(1500);
       back();
     }
+    var 纠正 = threads.start(function () {
+      toastLog("纠正===>启动完成》》》")
+      while (true) {
+        var is_sure = textMatches(/(.*Google 提供.*|.*全部.*|.*或输入网址.*|.*播放设置.*|.*打开应用.*|.*登录.*)/).findOne();
+        if (is_sure.enabled()) {
+          sleep(random(1000, 2000));
+          app.startActivity({
+            packageName: "com.android.chrome",
+            className: "org.chromium.chrome.browser.ChromeTabbedActivity",
+            data: "https://aviso.bz/work-serf"
+          });
+        } else {
+          sleep(500)
+        }
+      }
+    })
+
+    sleep(2000)
+    var 纠正1 = threads.start(function () {
+      toastLog("纠正1===>启动完成》》》")
+      while (true) {
+        var is_sure = textMatches(/(.*系统应用.*|.*相册.*|.*Play 商店.*|.*应用商店.*|.*点击来获取天气信息.*|.*开始.*|.*使用教程.*|.*连接.*|.*配置文件.*)/).findOne();
+        if (is_sure.enabled()) {
+          sleep(random(1000, 2000));
+          launchApp("Chrome")
+        } else {
+          sleep(500)
+        }
+      }
+    })
+
+    sleep(2000)
+    var 纠正2 = threads.start(function () {
+      toastLog("纠正2===>启动完成》》》")
+      while (true) {
+        var is_sure = textMatches(/(.*在网页中查找.*|.*帮助和反馈.*|.*游戏.*)/).findOne();
+        if (is_sure.enabled()) {
+          sleep(random(3000, 5000));
+          var is_sure = textMatches(/(.*在网页中查找.*|.*帮助和反馈.*|.*游戏.*)/).findOne();
+          if (is_sure.enabled()) {
+            sleep(random(1000, 2000));
+            back()
+            sleep(5000)
+          } else {
+            sleep(500)
+          }
+        } else {
+          sleep(500)
+        }
+      }
+    })
   }
 }
