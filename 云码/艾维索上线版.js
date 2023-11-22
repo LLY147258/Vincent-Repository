@@ -1,8 +1,9 @@
 //脚本ID
 var script_id = "AVISO99928752";
 var profit = 0;
-var 看视频_time = 420;
-var 冲浪_time = 180;
+var 看视频_time = 61;
+var 冲浪_time = 31;
+var 全局_good;
 console.show();
 sleep(300);
 var biaoti = threads.start(function () {
@@ -23,7 +24,7 @@ while (true) {
             var ii = idContains("new-money-ballans").classNameContains("android.widget.TextView").findOne();
             var i = ii.text()
             var w = i.indexOf(" руб.");
-            var 全局_good = i.substring(0, w)
+            全局_good = i.substring(0, w);
             break;
         } else {
             while (true) {
@@ -276,40 +277,54 @@ function 点击_youtube刷新() {
 for (ii_1 = 1; ii_1 < 999999999999999999999999999999; ii_1++) {
     try {
         while (true) {
-            var returned = idContains("com.android.chrome:id/empty_state_container").classNameContains("android.widget.ScrollView").findOnce();
-            if (returned) {
+            var ii = idContains("new-money-ballans").classNameContains("android.widget.TextView").findOnce();
+            if (ii) {
+                var i = ii.text()
+                var w = i.indexOf(" руб.");
+                全局_good = i.substring(0, w);
+                console.log("刷新：" + 全局_good);
                 break;
             } else {
-                var returned = idContains("com.android.chrome:id/tab_switcher_button").descContains("切换或关闭标签页").classNameContains("android.widget.ImageButton").findOnce();
-                if (returned) {
-                    returned.click();
-                    sleep(500);
-                } else {
-                    var returned = idContains("com.android.chrome:id/menu_button").descContains("自定义及控制 Google Chrome").classNameContains("android.widget.ImageButton").findOnce();
+                while (true) {
+                    var returned = idContains("com.android.chrome:id/empty_state_container").classNameContains("android.widget.ScrollView").findOnce();
                     if (returned) {
-                        returned.click();
-                        sleep(500);
+                        break;
                     } else {
-                        var returned = idContains("com.android.chrome:id/close_all_tabs_menu_id").classNameContains("android.widget.LinearLayout").findOnce();
+                        var returned = idContains("com.android.chrome:id/tab_switcher_button").descContains("切换或关闭标签页").classNameContains("android.widget.ImageButton").findOnce();
                         if (returned) {
                             returned.click();
                             sleep(500);
                         } else {
-                            var returned = idContains("com.android.chrome:id/positive_button").textContains("关闭所有标签页").classNameContains("android.widget.Button").findOnce();
+                            var returned = idContains("com.android.chrome:id/menu_button").descContains("自定义及控制 Google Chrome").classNameContains("android.widget.ImageButton").findOnce();
                             if (returned) {
                                 returned.click();
-                                break;
+                                sleep(500);
                             } else {
-                                app.startActivity({
-                                    packageName: "com.android.chrome",
-                                    className: "org.chromium.chrome.browser.ChromeTabbedActivity",
-                                    data: "https://aviso.bz/work-youtube"
-                                });
+                                var returned = idContains("com.android.chrome:id/close_all_tabs_menu_id").classNameContains("android.widget.LinearLayout").findOnce();
+                                if (returned) {
+                                    returned.click();
+                                    sleep(500);
+                                } else {
+                                    var returned = idContains("com.android.chrome:id/positive_button").textContains("关闭所有标签页").classNameContains("android.widget.Button").findOnce();
+                                    if (returned) {
+                                        returned.click();
+                                        break;
+                                    } else {
+                                        app.startActivity({
+                                            packageName: "com.android.chrome",
+                                            className: "org.chromium.chrome.browser.ChromeTabbedActivity",
+                                            data: "https://aviso.bz/work-youtube"
+                                        });
+                                        sleep(5000)
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
+
+
         }
         console.setTitle("开始运行==>获取余额")
         //任务-接取跳转到视频页+播放+返回+主页初始化
@@ -1343,6 +1358,48 @@ for (ii_1 = 1; ii_1 < 999999999999999999999999999999; ii_1++) {
         ////////////////////////////
         //到此是主流程一次执行完毕
         while (true) {
+            var returned = idContains("com.android.chrome:id/empty_state_container").classNameContains("android.widget.ScrollView").findOnce();
+            if (returned) {
+                break;
+            } else {
+                var returned = idContains("com.android.chrome:id/tab_switcher_button").descContains("切换或关闭标签页").classNameContains("android.widget.ImageButton").findOnce();
+                if (returned) {
+                    returned.click();
+                    sleep(500);
+                } else {
+                    var returned = idContains("com.android.chrome:id/menu_button").descContains("自定义及控制 Google Chrome").classNameContains("android.widget.ImageButton").findOnce();
+                    if (returned) {
+                        returned.click();
+                        sleep(500);
+                    } else {
+                        var returned = idContains("com.android.chrome:id/close_all_tabs_menu_id").classNameContains("android.widget.LinearLayout").findOnce();
+                        if (returned) {
+                            returned.click();
+                            sleep(500);
+                        } else {
+                            var returned = idContains("com.android.chrome:id/positive_button").textContains("关闭所有标签页").classNameContains("android.widget.Button").findOnce();
+                            if (returned) {
+                                returned.click();
+                                break;
+                            } else {
+                                app.startActivity({
+                                    packageName: "com.android.chrome",
+                                    className: "org.chromium.chrome.browser.ChromeTabbedActivity",
+                                    data: "https://aviso.bz/work-youtube"
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        app.startActivity({
+            packageName: "com.android.chrome",
+            className: "org.chromium.chrome.browser.ChromeTabbedActivity",
+            data: "https://aviso.bz/work-youtube"
+        });
+        text("AVISO").className("android.widget.TextView").waitFor();
+        while (true) {
             var returned = descContains("settings").classNameContains("android.view.View").findOnce();
             if (returned) {
                 var Good = idContains("new-money-ballans").classNameContains("android.widget.TextView").findOnce()
@@ -1352,7 +1409,6 @@ for (ii_1 = 1; ii_1 < 999999999999999999999999999999; ii_1++) {
                     var w = i.indexOf(" руб.");
                     var 更新_good = i.substring(0, w)
                     profit = 更新_good - 全局_good
-
                     break;
                 } else {
                     while (true) {
@@ -1431,8 +1487,9 @@ for (ii_1 = 1; ii_1 < 999999999999999999999999999999; ii_1++) {
         }
 
         var exchangeRate = getExchangeRate();
+        console.log("卢布：" + profit);
         profit = toDecimal(profit / exchangeRate);
-        console.log("金额：" + profit);
+        console.log("RMB：" + profit);
         getProfit(toFixedFloor(profit), "成功", 200);
 
     } catch (err) {
